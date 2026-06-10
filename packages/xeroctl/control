@@ -1,0 +1,11 @@
+Package: xeroctl
+Version: @VERSION@
+Architecture: @ARCH@
+Maintainer: Xerotier <hello@xerotier.ai>
+Depends: libzstd1, libcurl4t64 | libcurl4, ca-certificates
+Section: utils
+Priority: optional
+Homepage: https://xerotier.ai
+Description: Xerotier command-line client
+ Command-line client for the Xerotier API: models, endpoints,
+ embeddings, batches, and platform management.

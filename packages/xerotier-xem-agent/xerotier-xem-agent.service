@@ -1,0 +1,49 @@
+# SPDX-License-Identifier: MIT
+# Xerotier - XEM Agent systemd unit (installed by the xerotier-xem-agent
+# package). Configure /etc/xerotier/xem-agent.env, then:
+#   sudo systemctl enable --now xerotier-xem-agent
+
+[Unit]
+Description=Xerotier XEM Agent
+Documentation=https://xerotier.ai/docs/private-agents
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=xerotier
+Group=xerotier
+
+ExecStart=/usr/bin/xerotier-xem-agent
+
+# Environment configuration
+Environment=LOG_LEVEL=info
+Environment=TOOLS_DIR=/var/lib/xerotier/tools
+EnvironmentFile=-/etc/xerotier/xem-agent.env
+
+# Runtime directories
+RuntimeDirectory=xerotier-xem-agent
+StateDirectory=xerotier
+
+# Restart policy
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Security hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/xerotier
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+
+[Install]
+WantedBy=multi-user.target

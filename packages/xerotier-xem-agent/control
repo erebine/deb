@@ -1,0 +1,11 @@
+Package: xerotier-xem-agent
+Version: @VERSION@
+Architecture: @ARCH@
+Maintainer: Xerotier <hello@xerotier.ai>
+Depends: libzmq5, libsodium23, libzstd1, libcurl4t64 | libcurl4, ca-certificates, adduser
+Section: net
+Priority: optional
+Homepage: https://xerotier.ai
+Description: Xerotier XEM execution agent
+ XEM execution agent for the Xerotier platform. Enrolls against a
+ router with a join key and executes tool calls.

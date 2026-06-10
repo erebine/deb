@@ -1,0 +1,57 @@
+---
+# Builds .deb packages from the latest stable Xerotier/binaries release
+# (or the tag given at dispatch) and attaches them to a matching release
+# in this repository.
+name: Build Debian packages
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Xerotier/binaries release tag to package (default latest stable)
+        required: false
+        type: string
+
+jobs:
+  build:
+    name: Build and release debs (${{ matrix.runner }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        runner:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Resolve release tag
+        id: tag
+        run: |
+          TAG="${{ inputs.tag }}"
+          if [ -z "$TAG" ]; then
+            TAG="$(curl -fsSL https://api.github.com/repos/Xerotier/binaries/releases/latest \
+              | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -1)"
+          fi
+          [ -n "$TAG" ] || { echo "could not resolve the latest release tag"; exit 1; }
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Build packages
+        run: make build TAG="${{ steps.tag.outputs.tag }}"
+
+      - name: Publish packages to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ steps.tag.outputs.tag }}"
+          # The trailing view absorbs create races between matrix jobs.
+          gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1 || \
+            gh release create "$TAG" --repo "${{ github.repository }}" \
+              --title "$TAG" --notes "Xerotier Debian packages for binaries release $TAG" || \
+            gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1
+          gh release upload "$TAG" --repo "${{ github.repository }}" --clobber \
+            build/*.deb

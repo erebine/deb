@@ -1,0 +1,13 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+set -e
+
+if [ "$1" = "configure" ]; then
+    if ! getent passwd xerotier >/dev/null; then
+        adduser --system --group --home /var/lib/xerotier \
+            --no-create-home --quiet xerotier
+    fi
+    if command -v systemctl >/dev/null 2>&1; then
+        systemctl daemon-reload >/dev/null 2>&1 || true
+    fi
+fi

@@ -1,0 +1,11 @@
+Package: xerotier-xim-agent
+Version: @VERSION@
+Architecture: @ARCH@
+Maintainer: Xerotier <hello@xerotier.ai>
+Depends: libzmq5, libsodium23, libzstd1, adduser
+Section: net
+Priority: optional
+Homepage: https://xerotier.ai
+Description: Xerotier XIM inference agent
+ XIM inference agent for the Xerotier platform. Enrolls against a
+ router with a join key and serves inference traffic.

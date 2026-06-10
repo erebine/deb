@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: MIT
+# Xerotier - XIM Agent systemd unit (installed by the xerotier-xim-agent
+# package). Set the join key in /etc/xerotier/xim-agent.env, then:
+#   sudo systemctl enable --now xerotier-xim-agent
+
+[Unit]
+Description=Xerotier XIM Agent
+Documentation=https://xerotier.ai/docs/private-agents
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=xerotier
+Group=xerotier
+
+# The agent persists enrollment under $HOME/.config/xerotier.
+Environment=HOME=/var/lib/xerotier
+EnvironmentFile=-/etc/xerotier/xim-agent.env
+
+# First start enrolls with XEROTIER_AGENT_JOIN_KEY from the env file;
+# later starts reuse the persisted enrollment state.
+ExecStartPre=/bin/sh -c '[ -f "$HOME/.config/xerotier/enrollment.json" ] || /usr/bin/xerotier-xim-agent enroll'
+ExecStart=/usr/bin/xerotier-xim-agent run
+
+# Runtime directories
+RuntimeDirectory=xerotier-xim-agent
+StateDirectory=xerotier
+
+# Restart policy
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Security hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/xerotier
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+
+[Install]
+WantedBy=multi-user.target
