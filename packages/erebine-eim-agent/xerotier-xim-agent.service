@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: MIT
+# Erebine - EIM Agent systemd unit (installed by the erebine-eim-agent
+# package). Set the join key in /etc/erebine/eim-agent.env, then:
+#   sudo systemctl enable --now erebine-eim-agent
+
+[Unit]
+Description=Erebine EIM Agent
+Documentation=https://erebine.ai/docs/private-agents
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=erebine
+Group=erebine
+
+# The agent persists enrollment under $HOME/.config/erebine.
+Environment=HOME=/var/lib/erebine
+EnvironmentFile=-/etc/erebine/eim-agent.env
+
+# First start enrolls with XEROTIER_AGENT_JOIN_KEY from the env file;
+# later starts reuse the persisted enrollment state.
+ExecStartPre=/bin/sh -c '[ -f "$HOME/.config/erebine/enrollment.json" ] || /usr/bin/erebine-eim-agent enroll'
+ExecStart=/usr/bin/erebine-eim-agent run
+
+# Runtime directories
+RuntimeDirectory=erebine-eim-agent
+StateDirectory=erebine
+
+# Restart policy
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Security hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/erebine
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+
+[Install]
+WantedBy=multi-user.target

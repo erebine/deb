@@ -1,5 +1,5 @@
 ---
-# Builds .deb packages from the latest stable Xerotier/binaries release
+# Builds .deb packages from the latest stable Erebine/binaries release
 # (or the tag given at dispatch) and attaches them to a matching release
 # in this repository.
 name: Build Debian packages
@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Xerotier/binaries release tag to package (default latest stable)
+        description: Erebine/binaries release tag to package (default latest stable)
         required: false
         type: string
 
@@ -24,7 +24,7 @@ jobs:
       matrix:
         runner:
           - ubuntu-latest
-          - ubuntu-24.04-arm
+          #- ubuntu-24.04-arm
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -34,7 +34,7 @@ jobs:
         run: |
           TAG="${{ inputs.tag }}"
           if [ -z "$TAG" ]; then
-            TAG="$(curl -fsSL https://api.github.com/repos/Xerotier/binaries/releases/latest \
+            TAG="$(curl -fsSL https://api.github.com/repos/Erebine/binaries/releases/latest \
               | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -1)"
           fi
           [ -n "$TAG" ] || { echo "could not resolve the latest release tag"; exit 1; }
@@ -51,7 +51,7 @@ jobs:
           # The trailing view absorbs create races between matrix jobs.
           gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1 || \
             gh release create "$TAG" --repo "${{ github.repository }}" \
-              --title "$TAG" --notes "Xerotier Debian packages for binaries release $TAG" || \
+              --title "$TAG" --notes "Erebine Debian packages for binaries release $TAG" || \
             gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1
           gh release upload "$TAG" --repo "${{ github.repository }}" --clobber \
             build/*.deb

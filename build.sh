@@ -1,8 +1,8 @@
 #!/bin/bash
 # SPDX-License-Identifier: MIT
-# Build .deb packages from the latest stable Xerotier binaries.
+# Build .deb packages from the latest stable Erebine binaries.
 #
-# Resolves the latest release of Xerotier/binaries, downloads the Linux
+# Resolves the latest release of Erebine/binaries, downloads the Linux
 # binaries for this host architecture, and packages them with dpkg-deb.
 #
 # Env:
@@ -11,7 +11,7 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
-REPO="Xerotier/binaries"
+REPO="Erebine/binaries"
 ARCH="$(uname -m)"
 case "$ARCH" in
   x86_64) DEB_ARCH=amd64 ;;
@@ -33,7 +33,7 @@ VERSION="${TAG#v}"
 WORK="$HERE/build"
 mkdir -p "$WORK"
 
-for pkg in xeroctl xerotier-xim-agent xerotier-xem-agent; do
+for pkg in erectl erebine-eim-agent erebine-eem-agent; do
   echo "==> ${pkg}-Linux-${ARCH} (${TAG})"
   stage="$WORK/${pkg}_${VERSION}_${DEB_ARCH}"
   rm -rf "$stage"
@@ -52,7 +52,7 @@ for pkg in xeroctl xerotier-xim-agent xerotier-xem-agent; do
   done
   for envf in "$HERE/packages/$pkg"/*.env; do
     [ -f "$envf" ] || continue
-    install -D -m 0644 "$envf" "$stage/etc/xerotier/$(basename "$envf")"
+    install -D -m 0644 "$envf" "$stage/etc/erebine/$(basename "$envf")"
   done
   if [ -d "$stage/etc" ]; then
     (cd "$stage" && find etc -type f | sed 's|^|/|') > "$stage/DEBIAN/conffiles"

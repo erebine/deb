@@ -1,4 +1,4 @@
-# Xerotier Debian packaging Makefile
+# Erebine Debian packaging Makefile
 
 TAG ?=
 

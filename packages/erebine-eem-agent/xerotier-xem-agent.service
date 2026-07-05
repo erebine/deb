@@ -1,29 +1,29 @@
 # SPDX-License-Identifier: MIT
-# Xerotier - XEM Agent systemd unit (installed by the xerotier-xem-agent
-# package). Configure /etc/xerotier/xem-agent.env, then:
-#   sudo systemctl enable --now xerotier-xem-agent
+# Erebine - EEM Agent systemd unit (installed by the erebine-eem-agent
+# package). Configure /etc/erebine/eem-agent.env, then:
+#   sudo systemctl enable --now erebine-eem-agent
 
 [Unit]
-Description=Xerotier XEM Agent
-Documentation=https://xerotier.ai/docs/private-agents
+Description=Erebine EEM Agent
+Documentation=https://erebine.ai/docs/private-agents
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=simple
-User=xerotier
-Group=xerotier
+User=erebine
+Group=erebine
 
-ExecStart=/usr/bin/xerotier-xem-agent
+ExecStart=/usr/bin/erebine-eem-agent
 
 # Environment configuration
 Environment=LOG_LEVEL=info
-Environment=TOOLS_DIR=/var/lib/xerotier/tools
-EnvironmentFile=-/etc/xerotier/xem-agent.env
+Environment=TOOLS_DIR=/var/lib/erebine/tools
+EnvironmentFile=-/etc/erebine/eem-agent.env
 
 # Runtime directories
-RuntimeDirectory=xerotier-xem-agent
-StateDirectory=xerotier
+RuntimeDirectory=erebine-eem-agent
+StateDirectory=erebine
 
 # Restart policy
 Restart=on-failure
@@ -39,7 +39,7 @@ LimitNPROC=4096
 NoNewPrivileges=yes
 ProtectSystem=strict
 ProtectHome=yes
-ReadWritePaths=/var/lib/xerotier
+ReadWritePaths=/var/lib/erebine
 PrivateTmp=yes
 ProtectKernelTunables=yes
 ProtectKernelModules=yes

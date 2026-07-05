@@ -1,0 +1,11 @@
+Package: erectl
+Version: @VERSION@
+Architecture: @ARCH@
+Maintainer: Erebine <hello@erebine.ai>
+Depends: libzstd1, libcurl4t64 | libcurl4, ca-certificates
+Section: utils
+Priority: optional
+Homepage: https://erebine.ai
+Description: Erebine command-line client
+ Command-line client for the Erebine API: models, endpoints,
+ embeddings, batches, and platform management.
