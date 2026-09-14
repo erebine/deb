@@ -6,6 +6,8 @@ Depends: libzmq5, libsodium23, libzstd1, libcurl4t64 | libcurl4, ca-certificates
 Section: net
 Priority: optional
 Homepage: https://erebine.ai
+Vcs-Browser: https://github.com/Erebine/binaries
+Vcs-Git: https://github.com/Erebine/binaries.git
 Description: Erebine EEM execution agent
  EEM execution agent for the Erebine platform. Enrolls against a
  router with a join key and executes tool calls.

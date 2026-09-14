@@ -33,6 +33,13 @@ VERSION="${TAG#v}"
 WORK="$HERE/build"
 mkdir -p "$WORK"
 
+# The release's generated third-party notices, installed beside each
+# package's copyright file. Releases after v1.13.0 attach them.
+NOTICES="$WORK/THIRD_PARTY_NOTICES"
+curl -fSL ${AUTH[@]+"${AUTH[@]}"} -o "$NOTICES" \
+  "https://github.com/${REPO}/releases/download/${TAG}/THIRD_PARTY_NOTICES" \
+  || { echo "release ${TAG} has no THIRD_PARTY_NOTICES asset"; exit 1; }
+
 for pkg in erectl erebine-eim-agent erebine-eem-agent; do
   echo "==> ${pkg}-Linux-${ARCH} (${TAG})"
   stage="$WORK/${pkg}_${VERSION}_${DEB_ARCH}"
@@ -43,7 +50,8 @@ for pkg in erectl erebine-eim-agent erebine-eem-agent; do
   chmod 0755 "$stage/usr/bin/$pkg"
   sed -e "s/@VERSION@/${VERSION}/" -e "s/@ARCH@/${DEB_ARCH}/" \
     "$HERE/packages/$pkg/control" > "$stage/DEBIAN/control"
-  install -D -m 0644 "$HERE/LICENSE" "$stage/usr/share/doc/$pkg/copyright"
+  install -D -m 0644 "$HERE/debian/copyright" "$stage/usr/share/doc/$pkg/copyright"
+  install -D -m 0644 "$NOTICES" "$stage/usr/share/doc/$pkg/THIRD_PARTY_NOTICES"
 
   # Optional systemd unit, env-file template, and maintainer scripts.
   for unit in "$HERE/packages/$pkg"/*.service; do
