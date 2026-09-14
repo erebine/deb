@@ -34,6 +34,19 @@ To package a specific release instead of the latest, set `TAG`:
 TAG=v0.0.1 ./build.sh
 ```
 
+## Licensing
+
+Each package's `/usr/share/doc/<package>/copyright` is not kept in this
+repository. It is the `debian-copyright` asset attached to the
+Erebine/binaries release being packaged: a machine-readable DEP-5 file
+generated from the dependency pins that release's binaries were linked
+from, so it can never describe a different dependency set than the binary
+beside it. The release's `THIRD_PARTY_NOTICES` is installed next to it.
+
+`build.sh` downloads both for the tag it is packaging and fails if either
+is missing, so a release cut before the generated metadata existed cannot
+produce a package with no copyright file.
+
 ## Packages
 
 | Package | Binary | Dependencies |
