@@ -1,0 +1,45 @@
+---
+# License compliance for this repository (work order WI-11).
+#
+# Runs on every pull request and every push to main. It builds the packages
+# against a fixture release and looks inside the .deb files, because the
+# question is what dpkg-deb produces and not what build.sh appears to say.
+# The build fails when a package is missing /usr/share/doc/<package>/copyright
+# or THIRD_PARTY_NOTICES, when either is not mode 0644 or is not the release
+# asset it came from, when packages/ and build.sh's package list disagree, or
+# when packaging a release with no copyright asset produces a package anyway.
+#
+# Nothing is fetched: the fixture release is written to a temporary directory
+# and a stand-in curl on PATH serves it, so the check does not depend on any
+# Erebine/binaries release or tag existing. dpkg-deb is already on the runner.
+# The script's own self-test runs first, so a check that has stopped checking
+# anything is reported before it is trusted.
+name: License
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  license:
+    name: License checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: License check self-tests
+        run: bash scripts/check-license.sh --self-test
+
+      - name: Every package carries the release's copyright file
+        run: bash scripts/check-license.sh

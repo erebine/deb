@@ -33,6 +33,23 @@ VERSION="${TAG#v}"
 WORK="$HERE/build"
 mkdir -p "$WORK"
 
+# The release's generated licensing metadata, installed into every package:
+# debian-copyright is the machine-readable DEP-5 copyright file Erebine/platform
+# generates from the dependency pins THIS tag's binaries were linked from, and
+# THIRD_PARTY_NOTICES is the notices text its header refers to. Both are
+# attached to every release beside the binaries, so the packaged copyright can
+# never describe a different dependency set than the binary it ships with.
+# Releases cut before the licensing change carry neither; packaging one fails
+# here rather than producing a package with no copyright file.
+COPYRIGHT="$WORK/debian-copyright"
+NOTICES="$WORK/THIRD_PARTY_NOTICES"
+for asset in debian-copyright THIRD_PARTY_NOTICES; do
+  curl -fSL ${AUTH[@]+"${AUTH[@]}"} -o "$WORK/$asset" \
+    "https://github.com/${REPO}/releases/download/${TAG}/${asset}" \
+    || { echo "release ${TAG} has no ${asset} asset: it predates the generated"; \
+         echo "licensing metadata. Package a release that carries it."; exit 1; }
+done
+
 for pkg in erectl erebine-eim-agent erebine-eem-agent; do
   echo "==> ${pkg}-Linux-${ARCH} (${TAG})"
   stage="$WORK/${pkg}_${VERSION}_${DEB_ARCH}"
@@ -43,7 +60,8 @@ for pkg in erectl erebine-eim-agent erebine-eem-agent; do
   chmod 0755 "$stage/usr/bin/$pkg"
   sed -e "s/@VERSION@/${VERSION}/" -e "s/@ARCH@/${DEB_ARCH}/" \
     "$HERE/packages/$pkg/control" > "$stage/DEBIAN/control"
-  install -D -m 0644 "$HERE/LICENSE" "$stage/usr/share/doc/$pkg/copyright"
+  install -D -m 0644 "$COPYRIGHT" "$stage/usr/share/doc/$pkg/copyright"
+  install -D -m 0644 "$NOTICES" "$stage/usr/share/doc/$pkg/THIRD_PARTY_NOTICES"
 
   # Optional systemd unit, env-file template, and maintainer scripts.
   for unit in "$HERE/packages/$pkg"/*.service; do

@@ -34,6 +34,34 @@ To package a specific release instead of the latest, set `TAG`:
 TAG=v0.0.1 ./build.sh
 ```
 
+Prebuilt packages are attached to this repository's
+[releases](https://github.com/erebine/deb/releases). Each one is also
+published under an unversioned filename that always resolves to the newest
+release, so installing does not start with looking a version up:
+
+``` shell
+curl -fLO https://github.com/erebine/deb/releases/latest/download/erectl_amd64.deb
+sudo apt install -y ./erectl_amd64.deb
+```
+
+The architecture stays in that name, so the unversioned filename can never
+resolve to a package built for another machine. The versioned filename
+(`erectl_2.0.0_amd64.deb`) is attached to the same release for pinning to a
+specific version.
+
+## Licensing
+
+Each package's `/usr/share/doc/<package>/copyright` is not kept in this
+repository. It is the `debian-copyright` asset attached to the
+Erebine/binaries release being packaged: a machine-readable DEP-5 file
+generated from the dependency pins that release's binaries were linked
+from, so it can never describe a different dependency set than the binary
+beside it. The release's `THIRD_PARTY_NOTICES` is installed next to it.
+
+`build.sh` downloads both for the tag it is packaging and fails if either
+is missing, so a release cut before the generated metadata existed cannot
+produce a package with no copyright file.
+
 ## Packages
 
 | Package | Binary | Dependencies |

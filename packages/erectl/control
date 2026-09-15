@@ -6,6 +6,8 @@ Depends: libzstd1, libcurl4t64 | libcurl4, ca-certificates
 Section: utils
 Priority: optional
 Homepage: https://erebine.ai
+Vcs-Browser: https://github.com/Erebine/binaries
+Vcs-Git: https://github.com/Erebine/binaries.git
 Description: Erebine command-line client
  Command-line client for the Erebine API: models, endpoints,
  embeddings, batches, and platform management.
