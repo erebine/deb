@@ -9,6 +9,25 @@ Documentation=https://erebine.ai/docs/private-agents
 After=network-online.target
 Wants=network-online.target
 
+# Start rate limit. These two keys are only honored in [Unit]; a
+# StartLimitIntervalSec= placed in [Service] is silently ignored and
+# leaves the default 10s window, which RestartSec=5 never fills, so a
+# doomed agent restarts forever.
+#
+# Until an enrollment is persisted, every start runs `enroll`, which
+# tries each router once and exits non-zero when the join key is
+# absent, malformed, expired, revoked or used up, or when no router
+# answers. Retrying cannot fix a rejected key, and a join key allows
+# only a limited number of enrollments, so a loop that does reach the
+# router can spend what the key has left. Five starts inside ten
+# minutes (about 25 seconds at RestartSec=5) therefore trips the limit
+# and parks the unit in `failed` until an operator installs a fresh
+# join key and runs:
+#   sudo systemctl reset-failed erebine-eim-agent
+#   sudo systemctl start erebine-eim-agent
+StartLimitIntervalSec=600
+StartLimitBurst=5
+
 [Service]
 Type=simple
 User=erebine
@@ -30,8 +49,6 @@ StateDirectory=erebine
 # Restart policy
 Restart=on-failure
 RestartSec=5
-StartLimitIntervalSec=60
-StartLimitBurst=5
 
 # Resource limits
 LimitNOFILE=65536
