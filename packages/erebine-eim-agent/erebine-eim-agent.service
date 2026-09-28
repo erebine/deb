@@ -18,7 +18,7 @@ Group=erebine
 Environment=HOME=/var/lib/erebine
 EnvironmentFile=-/etc/erebine/eim-agent.env
 
-# First start enrolls with XEROTIER_AGENT_JOIN_KEY from the env file;
+# First start enrolls with EREBINE_AGENT_JOIN_KEY from the env file;
 # later starts reuse the persisted enrollment state.
 ExecStartPre=/bin/sh -c '[ -f "$HOME/.config/erebine/enrollment.json" ] || /usr/bin/erebine-eim-agent enroll'
 ExecStart=/usr/bin/erebine-eim-agent run
