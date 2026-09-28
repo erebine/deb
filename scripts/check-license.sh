@@ -198,8 +198,11 @@ check_tree() {
     for entry in "${REQUIRED_DOCS[@]}"; do
       asset="${entry%%:*}"
       name="${entry##*:}"
+      # grep reads the whole listing. With -q it exits at the first match,
+      # dpkg-deb dies of SIGPIPE, and pipefail reports a present file as
+      # missing.
       if ! dpkg-deb -c "$deb" \
-           | grep -qE "^-rw-r--r-- .*\./usr/share/doc/${pkg}/${name}$"; then
+           | grep -E "^-rw-r--r-- .*\./usr/share/doc/${pkg}/${name}$" >/dev/null; then
         echo "FAIL $pkg: /usr/share/doc/$pkg/$name is missing or not mode 0644"
         dpkg-deb -c "$deb" | grep -F "/usr/share/doc/$pkg/" | sed 's/^/     /' || true
         failed=1
