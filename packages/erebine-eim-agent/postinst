@@ -7,6 +7,15 @@ if [ "$1" = "configure" ]; then
         adduser --system --group --home /var/lib/erebine \
             --no-create-home --quiet erebine
     fi
+    # ROCm GPUs: /dev/kfd and /dev/dri/renderD* belong to video or render,
+    # depending on the distribution. Join whichever exist here; naming a
+    # group the host lacks in the unit's SupplementaryGroups= would fail the
+    # service with 216/GROUP. adduser is a no-op for an existing member.
+    for group in video render; do
+        if getent group "$group" >/dev/null; then
+            adduser --quiet erebine "$group"
+        fi
+    done
     if command -v systemctl >/dev/null 2>&1; then
         systemctl daemon-reload >/dev/null 2>&1 || true
     fi
