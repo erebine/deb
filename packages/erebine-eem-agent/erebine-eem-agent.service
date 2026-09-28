@@ -17,8 +17,8 @@ Group=erebine
 ExecStart=/usr/bin/erebine-eem-agent
 
 # Environment configuration
-Environment=LOG_LEVEL=info
-Environment=TOOLS_DIR=/var/lib/erebine/tools
+Environment=EREBINE_EEM_LOG_LEVEL=info
+Environment=EREBINE_EEM_TOOLS_DIR=/var/lib/erebine/tools
 EnvironmentFile=-/etc/erebine/eem-agent.env
 
 # Runtime directories
