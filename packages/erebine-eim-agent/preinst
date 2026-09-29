@@ -1,0 +1,10 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+set -e
+
+# Packages up to 2.3.4 installed the env template as xim-agent.env, a name
+# the unit never read. The helper removes it on upgrade from those versions,
+# keeps a copy the operator edited as xim-agent.env.dpkg-bak, and has to run
+# with the same arguments from preinst, postinst and postrm.
+dpkg-maintscript-helper rm_conffile /etc/erebine/xim-agent.env 2.3.5~ \
+    erebine-eim-agent -- "$@"

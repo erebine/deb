@@ -75,7 +75,7 @@ for pkg in erectl erebine-eim-agent erebine-eem-agent; do
   if [ -d "$stage/etc" ]; then
     (cd "$stage" && find etc -type f | sed 's|^|/|') > "$stage/DEBIAN/conffiles"
   fi
-  for script in postinst prerm postrm; do
+  for script in preinst postinst prerm postrm; do
     if [ -f "$HERE/packages/$pkg/$script" ]; then
       install -m 0755 "$HERE/packages/$pkg/$script" "$stage/DEBIAN/$script"
     fi
