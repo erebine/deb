@@ -3,7 +3,7 @@
 set -e
 
 # Removes the obsolete xem-agent.env; see preinst.
-dpkg-maintscript-helper rm_conffile /etc/erebine/xem-agent.env 2.3.5~ \
+dpkg-maintscript-helper rm_conffile /etc/erebine/xem-agent.env 2.4.0~ \
     erebine-eem-agent -- "$@"
 
 if [ "$1" = "configure" ]; then
