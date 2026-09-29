@@ -88,6 +88,10 @@ Both services run as the `erebine` system user (created on install)
 and keep state under `/var/lib/erebine`. The agents enroll on first
 start using the join key from their env file.
 
+The EIM package does not install vLLM. Install it yourself and set
+`EREBINE_AGENT_VLLM_PATH` in `/etc/erebine/eim-agent.env` to the
+absolute path of its `vllm` executable.
+
 ### Widening the EEM sandbox
 
 The EEM unit runs its tools in a sandbox: `ProtectHome=yes`,
