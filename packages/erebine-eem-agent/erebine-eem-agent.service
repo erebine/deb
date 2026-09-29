@@ -50,9 +50,14 @@ StateDirectory=erebine
 Restart=on-failure
 RestartSec=5
 
-# Resource limits
+# Resource limits. LimitNPROC is not per service: it caps every process
+# and thread of the erebine user on the host, and the EIM agent runs as
+# that user too. On a host with both, vLLM's threads count against this
+# unit, and once they pass the cap every tool launch here fails with
+# EAGAIN. It is uncapped for the same reason as in the EIM unit; the
+# per-service cap stays systemd's default TasksMax.
 LimitNOFILE=65536
-LimitNPROC=4096
+LimitNPROC=infinity
 
 # Security hardening. Tools the agent runs inherit this sandbox: they
 # cannot read /home, write outside /var/lib/erebine, or gain privileges.
