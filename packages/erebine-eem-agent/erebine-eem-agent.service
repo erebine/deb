@@ -37,9 +37,8 @@ ExecStart=/usr/bin/erebine-eem-agent
 # Environment configuration. Nothing is pinned with Environment=: the
 # agent reads CLI flags, then the environment, then /etc/erebine/eem.yaml,
 # so a pin here would silently override that file for every operator.
-# log_level (default info) and tools_dir (default /var/lib/erebine/tools)
-# come from eem.yaml or those defaults; the env file below, read into the
-# environment, still overrides both.
+# log_level (default info) comes from eem.yaml or that default; the env
+# file below, read into the environment, still overrides it.
 EnvironmentFile=-/etc/erebine/eem-agent.env
 
 # Runtime directories
