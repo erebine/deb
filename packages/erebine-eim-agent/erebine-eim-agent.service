@@ -61,6 +61,14 @@ RestartSec=5
 # far above what vLLM starts, so TasksMax is not raised.
 LimitNOFILE=65536
 LimitNPROC=infinity
+# vLLM and CUDA map very large virtual address ranges, and NCCL over
+# InfiniBand or RoCE registers memory against the locked-memory limit,
+# which the agent cannot bypass without CAP_IPC_LOCK. systemd's default
+# locked-memory limit is 8 MiB on Ubuntu 24.04 and RHEL 9, so neither
+# limit is left to the default, as in the unit erectl writes for a
+# bare-metal agent.
+LimitMEMLOCK=infinity
+LimitAS=infinity
 
 # Security hardening
 NoNewPrivileges=yes
