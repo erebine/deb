@@ -1,0 +1,10 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+set -e
+
+# Packages up to 2.3.4 installed the env template as xem-agent.env, a name
+# the unit never read. The helper removes it on upgrade from those versions,
+# keeps a copy the operator edited as xem-agent.env.dpkg-bak, and has to run
+# with the same arguments from preinst, postinst and postrm.
+dpkg-maintscript-helper rm_conffile /etc/erebine/xem-agent.env 2.4.0~ \
+    erebine-eem-agent -- "$@"

@@ -2,6 +2,10 @@
 # SPDX-License-Identifier: MIT
 set -e
 
+# Removes the obsolete xem-agent.env; see preinst.
+dpkg-maintscript-helper rm_conffile /etc/erebine/xem-agent.env 2.4.0~ \
+    erebine-eem-agent -- "$@"
+
 if command -v systemctl >/dev/null 2>&1; then
     systemctl daemon-reload >/dev/null 2>&1 || true
 fi

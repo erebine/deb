@@ -50,9 +50,17 @@ StateDirectory=erebine
 Restart=on-failure
 RestartSec=5
 
-# Resource limits
+# Resource limits. LimitNPROC is not per service: it caps every process
+# and thread of the erebine user on the host, the EEM agent's included,
+# and vLLM starts many (a worker per GPU, each with NCCL, BLAS and compile
+# threads). The container deploys run vLLM with no pids limit after a
+# 2048-task cap killed a data-parallel launch before the model loaded, so
+# it is not capped here either. The per-service cap stays systemd's
+# default TasksMax, a share of the host's thread ceiling (15% on Ubuntu,
+# 80% on RHEL; at 15% that is about 157,000 tasks per 128 GiB of RAM),
+# far above what vLLM starts, so TasksMax is not raised.
 LimitNOFILE=65536
-LimitNPROC=4096
+LimitNPROC=infinity
 
 # Security hardening
 NoNewPrivileges=yes

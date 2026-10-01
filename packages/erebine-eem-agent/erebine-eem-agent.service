@@ -34,9 +34,12 @@ Group=erebine
 
 ExecStart=/usr/bin/erebine-eem-agent
 
-# Environment configuration
-Environment=EREBINE_EEM_LOG_LEVEL=info
-Environment=EREBINE_EEM_TOOLS_DIR=/var/lib/erebine/tools
+# Environment configuration. Nothing is pinned with Environment=: the
+# agent reads CLI flags, then the environment, then /etc/erebine/eem.yaml,
+# so a pin here would silently override that file for every operator.
+# log_level (default info) and tools_dir (default /var/lib/erebine/tools)
+# come from eem.yaml or those defaults; the env file below, read into the
+# environment, still overrides both.
 EnvironmentFile=-/etc/erebine/eem-agent.env
 
 # Runtime directories
@@ -47,11 +50,25 @@ StateDirectory=erebine
 Restart=on-failure
 RestartSec=5
 
-# Resource limits
+# Resource limits. LimitNPROC is not per service: it caps every process
+# and thread of the erebine user on the host, and the EIM agent runs as
+# that user too. On a host with both, vLLM's threads count against this
+# unit, and once they pass the cap every tool launch here fails with
+# EAGAIN. It is uncapped for the same reason as in the EIM unit; the
+# per-service cap stays systemd's default TasksMax.
 LimitNOFILE=65536
-LimitNPROC=4096
+LimitNPROC=infinity
 
-# Security hardening
+# Security hardening. Tools the agent runs inherit this sandbox: they
+# cannot read /home, write outside /var/lib/erebine, or gain privileges.
+# Widen it with a drop-in rather than by editing this file, which a
+# package upgrade replaces. ReadWritePaths= in a drop-in adds to the list
+# below:
+#   sudo systemctl edit erebine-eem-agent
+#     [Service]
+#     ProtectHome=read-only
+#     ReadWritePaths=/srv/repos
+#   sudo systemctl restart erebine-eem-agent
 NoNewPrivileges=yes
 ProtectSystem=strict
 ProtectHome=yes
